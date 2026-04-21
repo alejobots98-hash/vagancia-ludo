@@ -27,8 +27,8 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
-// LINK PERMANENTE DEL LOGO
-const LOGO_LUDO_VG = "https://i.ibb.co/3ykMvRz/logo-ludo-vg.png";
+// LINK DIRECTO DE DISCORD (ESTE NO FALLA)
+const LOGO_LUDO_VG = "https://cdn.discordapp.com/attachments/1486176116413825206/1496091000106201088/logo_ludo_vg.png";
 
 const estadosFilas = new Map();
 
@@ -106,6 +106,8 @@ function botonesTripleFila() {
     new ButtonBuilder().setCustomId("salir_fila").setLabel("Salir").setEmoji("✖️").setStyle(ButtonStyle.Danger)
   );
 }
+
+// --- RESTO DEL CÓDIGO IGUAL ---
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot || message.content !== PREFIX) return;
