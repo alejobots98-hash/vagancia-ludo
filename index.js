@@ -27,15 +27,18 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
+// Link estable de Discord para el logo
+const LOGO_LUDO_VG = "https://cdn.discordapp.com/attachments/1486176116413825206/1496091000106201088/logo_ludo_vg.png";
+
 const estadosFilas = new Map();
 
 // ===================== EMOJIS TEMÁTICOS =====================
 const EMOJI_DADO_TITULO = "🎲";
 const EMOJI_TABLERO = "🏁";
 const EMOJI_DINERO = "<a:money_sign:1350926754331627640>";
-const EMOJI_DADO_FILA = "<:dados:1496079805060354119>"; // Tu emoji personalizado
+const EMOJI_DADO_FILA = "<:dados:1496079805060354119>";
 
-// ===================== EMBED PAGOS (LUDO VER.) =====================
+// ===================== EMBED PAGOS =====================
 function embedPagos() {
   return new EmbedBuilder()
     .setColor(0x22c55e) // Verde
@@ -67,11 +70,11 @@ function embedPagos() {
     )
     .setFooter({ 
       text: "VAGANCIA • LUDO CLUB",
-      iconURL: "https://i.imgur.com/NAKqQ4W.jpeg" 
+      iconURL: LOGO_LUDO_VG // Usamos el logo estable
     });
 }
 
-// ===================== EMBED FILA (LUDO VER.) CORREGIDO =====================
+// ===================== EMBED FILA CORREGIDO =====================
 function crearEmbedFila(data = { f1: null, f2: null, f3: null }) {
   const p1 = data.f1 ? `<@${data.f1}>` : "*Esperando rival...*";
   const p2 = data.f2 ? `<@${data.f2}>` : "*Esperando rival...*";
@@ -91,8 +94,8 @@ ${EMOJI_DADO_FILA} **Mesa 3:** ${p3}
 
 *¡Entra a una mesa para coordinar el monto!*`
     )
-    // Logo de Ludo VG puesto como Thumbnail (al costadito arriba)
-    .setThumbnail("https://i.imgur.com/8m5XN3u.png") 
+    // Logo estable de Discord puesto como Thumbnail al costado
+    .setThumbnail(LOGO_LUDO_VG) 
     .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS" });
 }
 
