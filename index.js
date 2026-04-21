@@ -27,12 +27,12 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
-// LINK DIRECTO DE DISCORD (ESTE NO FALLA)
-const LOGO_LUDO_VG = "https://cdn.discordapp.com/attachments/1486176116413825206/1496091000106201088/logo_ludo_vg.png";
+// LINK DIRECTO Y PERMANENTE
+const LOGO_LUDO_VG = "https://i.ibb.co/3ykMvRz/logo-ludo-vg.png";
 
 const estadosFilas = new Map();
 
-// ===================== EMOJIS TEMÁTICOS =====================
+// ===================== EMOJIS =====================
 const EMOJI_DADO_TITULO = "🎲";
 const EMOJI_DINERO = "<a:money_sign:1350926754331627640>";
 const EMOJI_DADO_FILA = "<:dados:1496079805060354119>";
@@ -67,10 +67,7 @@ function embedPagos() {
 **VAGANCIA LUDO SYSTEM**
 🛡️ **Garantía de pago y transparencia**`
     )
-    .setFooter({ 
-      text: "VAGANCIA • LUDO CLUB",
-      iconURL: LOGO_LUDO_VG 
-    });
+    .setFooter({ text: "VAGANCIA • LUDO CLUB", iconURL: LOGO_LUDO_VG });
 }
 
 // ===================== EMBED FILA =====================
@@ -107,7 +104,7 @@ function botonesTripleFila() {
   );
 }
 
-// --- RESTO DEL CÓDIGO IGUAL ---
+// --- LÓGICA DE EVENTOS ---
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot || message.content !== PREFIX) return;
@@ -205,5 +202,5 @@ async function crearCanalPrivado(interaction, jugadores) {
   await canal.send({ content: `${jugadores.map(id => `<@${id}>`).join(" ")} <@&${STAFF_ROLE_ID}>`, embeds: [embedMatch, embedPagos()], components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("cerrar_partida").setLabel("FINALIZAR").setEmoji("🛑").setStyle(ButtonStyle.Danger))] });
 }
 
-client.once("ready", () => console.log(`🎲 Ludo Bot listo.`));
+client.once("ready", () => console.log(`🎲 Ludo Bot Vagancia listo.`));
 client.login(process.env.TOKEN);
