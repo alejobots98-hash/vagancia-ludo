@@ -70,7 +70,10 @@ function embedPagos() {
 ┗ 👤 Alejo German Tolosa
 ┗ 🔗 Alias: \`vg.apos\`
 
-🌐 **AstroPay / Binance**
+🌐 **AstroPay**
+┗ 🔗 [Pagar aquí](https://onetouch.astropay.com/payment?external_reference_id=8lIV0oqyplqnZulPqVirFZbTf2rkhLsR)
+
+💎 **Binance**
 ┗ 🆔 ID: \`729592524\`
 
 ━━━━━━━━━━━━━━━━━━
@@ -151,8 +154,13 @@ client.on("interactionCreate", async (interaction) => {
     data[filaKey] = null; 
     await interaction.update({ embeds: [crearEmbedFila(data)] });
     
+    // OBTENER NOMBRES PARA EL CANAL
+    const rivalMember = await interaction.guild.members.fetch(rivalId);
+    const userMember = await interaction.guild.members.fetch(userId);
+    const nombreCanal = `${rivalMember.user.username}-vs-${userMember.user.username}`.toLowerCase().replace(/[^a-z0-9\-]/g, "");
+
     const canal = await interaction.guild.channels.create({
-      name: `🎲┃ludo-${interaction.user.username}`,
+      name: `🎲┃${nombreCanal}`,
       type: ChannelType.GuildText,
       parent: interaction.channel.parent,
       permissionOverwrites: [
@@ -167,7 +175,6 @@ client.on("interactionCreate", async (interaction) => {
       .setColor(0x3b82f6)
       .setTitle("🏁 COMBATE DE LUDO INICIADO")
       .setDescription(`**ENFRENTAMIENTO:** <@${rivalId}> **VS** <@${userId}>`);
-      // Logo eliminado de aquí por pedido
 
     await canal.send({ 
       content: `<@${rivalId}> <@${userId}> <@&${STAFF_ROLE_ID}>`, 
