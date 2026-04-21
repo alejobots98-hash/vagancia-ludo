@@ -27,7 +27,6 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
-// LINK DIRECTO DE IMGUR
 const LOGO_LUDO_VG = "https://i.imgur.com/D4pC8Ky.png"; 
 
 const estadosFilas = new Map();
@@ -44,7 +43,7 @@ function crearEmbedFila(data = { f1: null, f2: null, f3: null }) {
   const p3 = data.f3 ? `<@${data.f3}>` : "*Esperando rival...*";
 
   return new EmbedBuilder()
-    .setColor(0xFACC15) // Amarillo Ludo
+    .setColor(0xFACC15) 
     .setTitle(`${EMOJI_DADO_TITULO} | SISTEMA DE FILAS • VAGANCIA`)
     .setDescription(
 `**MODALIDAD:** Apostado ${EMOJI_DINERO}
@@ -58,7 +57,7 @@ ${EMOJI_DADO_FILA} **MESA 3:** ${p3}
 
 *Presioná un botón para anotarte en la fila.*`
     )
-    .setImage(LOGO_LUDO_VG) // IMAGEN GRANDE ABAJO PARA QUE SE VEA BIEN EL LOGO
+    .setImage(LOGO_LUDO_VG) 
     .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS", iconURL: LOGO_LUDO_VG });
 }
 
@@ -76,10 +75,9 @@ function embedPagos() {
 
 ━━━━━━━━━━━━━━━━━━
 **COMISIONES**
-🎲 Fijo: **200 ARS**
-🟢 Menos de **2.500 ARS** → **FREE**`
+🎲 Fijo: **400 ARS**`
     )
-    .setThumbnail(LOGO_LUDO_VG); // En el ticket de pago queda bien chiquito al costado
+    .setThumbnail(LOGO_LUDO_VG); 
 }
 
 // ===================== LÓGICA DE BOTONES =====================
@@ -92,7 +90,7 @@ function botonesTripleFila() {
   );
 }
 
-// [Misma lógica de eventos que antes...]
+// ===================== EVENTOS =====================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || message.content !== PREFIX) return;
   const esAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator) || message.member.roles.cache.has(CREAR_FILA_ROLE_ID);
@@ -154,7 +152,7 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.update({ embeds: [crearEmbedFila(data)] });
     
     const canal = await interaction.guild.channels.create({
-      name: `🎲┃${interaction.user.username}-vs-rival`,
+      name: `🎲┃ludo-${interaction.user.username}`,
       type: ChannelType.GuildText,
       parent: interaction.channel.parent,
       permissionOverwrites: [
@@ -165,8 +163,17 @@ client.on("interactionCreate", async (interaction) => {
       ],
     });
 
-    const embedMatch = new EmbedBuilder().setColor(0x3b82f6).setTitle("🏁 PARTIDA LISTA").setDescription(`**DUELO:** <@${rivalId}> **VS** <@${userId}>`).setImage(LOGO_LUDO_VG);
-    await canal.send({ content: `<@${rivalId}> <@${userId}> <@&${STAFF_ROLE_ID}>`, embeds: [embedMatch, embedPagos()], components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("cerrar_partida").setLabel("FINALIZAR").setEmoji("🛑").setStyle(ButtonStyle.Danger))] });
+    const embedMatch = new EmbedBuilder()
+      .setColor(0x3b82f6)
+      .setTitle("🏁 COMBATE DE LUDO INICIADO")
+      .setDescription(`**ENFRENTAMIENTO:** <@${rivalId}> **VS** <@${userId}>`);
+      // Logo eliminado de aquí por pedido
+
+    await canal.send({ 
+      content: `<@${rivalId}> <@${userId}> <@&${STAFF_ROLE_ID}>`, 
+      embeds: [embedMatch, embedPagos()], 
+      components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("cerrar_partida").setLabel("FINALIZAR").setEmoji("🛑").setStyle(ButtonStyle.Danger))] 
+    });
   }
 });
 
