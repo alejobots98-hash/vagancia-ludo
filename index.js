@@ -21,7 +21,7 @@ const client = new Client({
 });
 
 // ===================== CONFIGURACIÓN =====================
-const PREFIX = "!ludo"; // Cambiado a !ludo
+const PREFIX = "!ludo";
 const CREAR_FILA_ROLE_ID = "1486959938038136912";
 const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
@@ -30,15 +30,15 @@ const LOG_CHANNEL_ID = "1486176116413825206";
 const estadosFilas = new Map();
 
 // ===================== EMOJIS TEMÁTICOS =====================
-const EMOJI_DADO = "🎲";
+const EMOJI_DADO_TITULO = "🎲";
 const EMOJI_TABLERO = "🏁";
 const EMOJI_DINERO = "<a:money_sign:1350926754331627640>";
-const EMOJI_ESTRELLA = "⭐";
+const EMOJI_DADO_FILA = "<:dados:1496079805060354119>"; // Tu emoji personalizado
 
 // ===================== EMBED PAGOS (LUDO VER.) =====================
 function embedPagos() {
   return new EmbedBuilder()
-    .setColor(0x22c55e) // Verde tipo Ludo
+    .setColor(0x22c55e) // Verde
     .setTitle("💰 MÉTODOS DE PAGO - LUDO APUESTAS")
     .setDescription(
 `━━━━━━━━━━━━━━━━━━
@@ -71,29 +71,28 @@ function embedPagos() {
     });
 }
 
-// ===================== EMBED FILA (LUDO VER.) =====================
+// ===================== EMBED FILA (LUDO VER.) CORREGIDO =====================
 function crearEmbedFila(data = { f1: null, f2: null, f3: null }) {
   const p1 = data.f1 ? `<@${data.f1}>` : "*Esperando rival...*";
   const p2 = data.f2 ? `<@${data.f2}>` : "*Esperando rival...*";
   const p3 = data.f3 ? `<@${data.f3}>` : "*Esperando rival...*";
 
   return new EmbedBuilder()
-    .setColor(0xFACC15) // Amarillo Ludo
-    .setTitle(`${EMOJI_DADO} | ¡FILA DE LUDO ACTIVA!`)
+    .setColor(0xFACC15) // Amarillo
+    .setTitle(`${EMOJI_DADO_TITULO} | ¡FILA DE LUDO ACTIVA!`)
     .setDescription(
 `**Modalidad:** Apostado ${EMOJI_DINERO}
 **Juego:** Ludo Club / King
 
 **Mesas disponibles:**
-${EMOJI_ESTRELLA} **Mesa 1:** ${p1}
-${EMOJI_ESTRELLA} **Mesa 2:** ${p2}
-${EMOJI_ESTRELLA} **Mesa 3:** ${p3}
+${EMOJI_DADO_FILA} **Mesa 1:** ${p1}
+${EMOJI_DADO_FILA} **Mesa 2:** ${p2}
+${EMOJI_DADO_FILA} **Mesa 3:** ${p3}
 
 *¡Entra a una mesa para coordinar el monto!*`
     )
-    // Imagen temática de Ludo para el embed
-    .setImage("https://i.imgur.com/M8pPjEa.png") 
-    .setThumbnail("https://i.imgur.com/NAKqQ4W.jpeg")
+    // Logo de Ludo VG puesto como Thumbnail (al costadito arriba)
+    .setThumbnail("https://i.imgur.com/8m5XN3u.png") 
     .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS" });
 }
 
