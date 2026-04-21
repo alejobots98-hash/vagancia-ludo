@@ -27,7 +27,7 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
-// LINK DIRECTO Y PERMANENTE
+// LINK DIRECTO DEL LOGO (IMGBB)
 const LOGO_LUDO_VG = "https://i.ibb.co/3ykMvRz/logo-ludo-vg.png";
 
 const estadosFilas = new Map();
@@ -37,10 +37,10 @@ const EMOJI_DADO_TITULO = "🎲";
 const EMOJI_DINERO = "<a:money_sign:1350926754331627640>";
 const EMOJI_DADO_FILA = "<:dados:1496079805060354119>";
 
-// ===================== EMBED PAGOS =====================
+// ===================== EMBED PAGOS (SÓLO PARA CANAL PRIVADO) =====================
 function embedPagos() {
   return new EmbedBuilder()
-    .setColor(0x22c55e)
+    .setColor(0x22c55e) // Verde
     .setTitle("💰 MÉTODOS DE PAGO - LUDO APUESTAS")
     .setDescription(
 `━━━━━━━━━━━━━━━━━━
@@ -70,14 +70,14 @@ function embedPagos() {
     .setFooter({ text: "VAGANCIA • LUDO CLUB", iconURL: LOGO_LUDO_VG });
 }
 
-// ===================== EMBED FILA =====================
+// ===================== EMBED FILA (CORREGIDO ESTILO TRUCO) =====================
 function crearEmbedFila(data = { f1: null, f2: null, f3: null }) {
   const p1 = data.f1 ? `<@${data.f1}>` : "*Esperando rival...*";
   const p2 = data.f2 ? `<@${data.f2}>` : "*Esperando rival...*";
   const p3 = data.f3 ? `<@${data.f3}>` : "*Esperando rival...*";
 
   return new EmbedBuilder()
-    .setColor(0xFACC15)
+    .setColor(0xFACC15) // Amarillo Ludo
     .setTitle(`${EMOJI_DADO_TITULO} | ¡FILA DE LUDO ACTIVA!`)
     .setDescription(
 `**Modalidad:** Apostado ${EMOJI_DINERO}
@@ -90,6 +90,7 @@ ${EMOJI_DADO_FILA} **Mesa 3:** ${p3}
 
 *¡Entra a una mesa para coordinar el monto!*`
     )
+    // ESTA ES LA CLAVE: .setThumbnail pone la imagen pequeña arriba a la derecha
     .setThumbnail(LOGO_LUDO_VG) 
     .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS" });
 }
@@ -104,29 +105,36 @@ function botonesTripleFila() {
   );
 }
 
-// --- LÓGICA DE EVENTOS ---
-
+// ===================== EVENTO MENSAJE =====================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || message.content !== PREFIX) return;
+
   const esAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
   const tieneRol = message.member.roles.cache.has(CREAR_FILA_ROLE_ID);
+
   if (!esAdmin && !tieneRol) return message.reply("❌ No tenés permisos.");
 
   const msg = await message.channel.send({
     embeds: [crearEmbedFila()],
     components: [botonesTripleFila()],
   });
+
   estadosFilas.set(msg.id, { f1: null, f2: null, f3: null });
 });
 
+// ===================== EVENTO INTERACCIÓN =====================
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
+  // --- LÓGICA CERRAR PARTIDA ---
   if (interaction.customId === "cerrar_partida") {
     const puedeCerrar = interaction.member.roles.cache.has(STAFF_ROLE_ID) || 
                         interaction.member.roles.cache.has(EXTRA_MOD_ROLE_ID) ||
                         interaction.member.permissions.has(PermissionsBitField.Flags.Administrator);
-    if (!puedeCerrar) return interaction.reply({ content: "❌ Solo el staff cierra la mesa.", ephemeral: true });
+
+    if (!puedeCerrar) {
+      return interaction.reply({ content: "❌ Solo el staff cierra la mesa.", ephemeral: true });
+    }
     
     const canalDestino = interaction.channel;
     await interaction.reply({ content: "💾 Guardando registro...", ephemeral: true });
@@ -143,12 +151,17 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
     } catch (e) { console.error(e); }
-    setTimeout(async () => { try { if (canalDestino?.deletable) await canalDestino.delete(); } catch (err) {} }, 2000);
+
+    setTimeout(async () => {
+      try { if (canalDestino?.deletable) await canalDestino.delete(); } catch (err) {}
+    }, 2000);
     return;
   }
 
+  // --- LÓGICA DE FILAS ---
   const data = estadosFilas.get(interaction.message.id);
   if (!data) return interaction.reply({ content: "❌ Fila expirada.", ephemeral: true });
+
   const userId = interaction.user.id;
 
   if (interaction.customId === "salir_fila") {
@@ -178,6 +191,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
+// ===================== CANAL PRIVADO (SÓLO PAGOS Y COMISIÓN) =====================
 async function crearCanalPrivado(interaction, jugadores) {
   const guild = interaction.guild;
   const parent = interaction.channel.parent;
@@ -197,9 +211,13 @@ async function crearCanalPrivado(interaction, jugadores) {
   const embedMatch = new EmbedBuilder()
     .setColor(0x3b82f6)
     .setTitle("🏁 PARTIDA LISTA")
-    .setDescription(`**DUELO DE DADOS**\n<@${jugadores[0]}> **VS** <@${jugadores[1]}>\n\n━━━━━━━━━━━━━━━━━━\n💰 **PASEN CAPTURA DE PAGO AQUÍ**\n━━━━━━━━━━━━━━━━━━`);
+    .setDescription(`**DUELO DE DADOS**\n<@${jugadores[0]}> **VS** <@${jugadores[1]}>\n\n━━━━━━━━━━━━━━━━━━\n💰 **PASEN CAPTURA DE PAGO AQUÍ**\n⚠️ No inicien sin el OK del Staff.\n━━━━━━━━━━━━━━━━━━`);
 
-  await canal.send({ content: `${jugadores.map(id => `<@${id}>`).join(" ")} <@&${STAFF_ROLE_ID}>`, embeds: [embedMatch, embedPagos()], components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("cerrar_partida").setLabel("FINALIZAR").setEmoji("🛑").setStyle(ButtonStyle.Danger))] });
+  await canal.send({ 
+    content: `${jugadores.map(id => `<@${id}>`).join(" ")} <@&${STAFF_ROLE_ID}>`, 
+    embeds: [embedMatch, embedPagos()], // Enviamos pagos y match juntos
+    components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("cerrar_partida").setLabel("FINALIZAR").setEmoji("🛑").setStyle(ButtonStyle.Danger))] 
+  });
 }
 
 client.once("ready", () => console.log(`🎲 Ludo Bot Vagancia listo.`));
