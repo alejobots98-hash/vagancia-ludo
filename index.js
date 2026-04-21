@@ -27,8 +27,8 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
-// LINK DE IMGUR (ACTUALIZADO A LINK DIRECTO .PNG)
-const LOGO_LUDO_VG = "https://i.imgur.com/DREzF6L.png"; 
+// LINK DIRECTO DE IMGUR (ESTE NO FALLA)
+const LOGO_LUDO_VG = "https://i.imgur.com/D4pC8Ky.png"; 
 
 const estadosFilas = new Map();
 
@@ -55,7 +55,7 @@ function crearEmbedFila(data = { f1: null, f2: null, f3: null }) {
     .setColor(0xFACC15)
     .setTitle(`${EMOJI_DADO_TITULO} | ¡FILA DE LUDO ACTIVA!`)
     .setDescription(`**Modalidad:** Apostado ${EMOJI_DINERO}\n**Juego:** Ludo Club / King\n\n**Mesas disponibles:**\n${EMOJI_DADO_FILA} **Mesa 1:** ${p1}\n${EMOJI_DADO_FILA} **Mesa 2:** ${p2}\n${EMOJI_DADO_FILA} **Mesa 3:** ${p3}\n\n*¡Entra a una mesa para coordinar el monto!*`)
-    .setThumbnail(LOGO_LUDO_VG) // MINIATURA ARRIBA A LA DERECHA
+    .setThumbnail(LOGO_LUDO_VG) 
     .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS" });
 }
 
@@ -85,7 +85,6 @@ client.on("messageCreate", async (message) => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
-  // Lógica para cerrar partidas y generar transcript
   if (interaction.customId === "cerrar_partida") {
     const puedeCerrar = interaction.member.roles.cache.has(STAFF_ROLE_ID) || interaction.member.roles.cache.has(EXTRA_MOD_ROLE_ID) || interaction.member.permissions.has(PermissionsBitField.Flags.Administrator);
     if (!puedeCerrar) return interaction.reply({ content: "❌ Solo Staff.", ephemeral: true });
@@ -102,7 +101,7 @@ client.on("interactionCreate", async (interaction) => {
     return;
   }
 
-  // REPARAR FILA SI SE REINICIÓ EL BOT
+  // REPARAR FILA SI EL BOT SE REINICIÓ (FIX EXPIRADA)
   if (!estadosFilas.has(interaction.message.id)) {
     estadosFilas.set(interaction.message.id, { f1: null, f2: null, f3: null });
   }
@@ -134,7 +133,6 @@ client.on("interactionCreate", async (interaction) => {
     data[filaKey] = null; 
     await interaction.update({ embeds: [crearEmbedFila(data)] });
     
-    // Crear canal privado
     const guild = interaction.guild;
     const parent = interaction.channel.parent;
     const nombres = [rivalId, userId].map(id => guild.members.cache.get(id)?.user.username || "jugador").join("-vs-").toLowerCase();
@@ -156,5 +154,5 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-client.once("ready", () => console.log("🎲 Bot Ludo Online con Fix de Memoria"));
+client.once("ready", () => console.log("🎲 Bot Ludo Online - Vagancia System"));
 client.login(process.env.TOKEN);
