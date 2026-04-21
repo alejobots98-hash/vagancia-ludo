@@ -27,7 +27,7 @@ const STAFF_ROLE_ID = "1476541425263968391";
 const EXTRA_MOD_ROLE_ID = "1211760228673257524"; 
 const LOG_CHANNEL_ID = "1486176116413825206";
 
-// LINK DIRECTO DE IMGUR (ESTE NO FALLA)
+// LINK DIRECTO DE IMGUR
 const LOGO_LUDO_VG = "https://i.imgur.com/D4pC8Ky.png"; 
 
 const estadosFilas = new Map();
@@ -38,27 +38,51 @@ const EMOJI_DINERO = "<a:money_sign:1350926754331627640>";
 const EMOJI_DADO_FILA = "<:dados:1496079805060354119>";
 
 // ===================== EMBEDS =====================
-function embedPagos() {
-  return new EmbedBuilder()
-    .setColor(0x22c55e)
-    .setTitle("💰 MÉTODOS DE PAGO - LUDO APUESTAS")
-    .setDescription(`━━━━━━━━━━━━━━━━━━\n**MÉTODOS DISPONIBLES**\n\n🏦 **Naranja X**\n┗ 👤 Alejo German Tolosa\n┗ 🔗 Alias: \`vg.apos\`\n\n🌐 **AstroPay**\n┗ 🔗 [Pagar aquí](https://onetouch.astropay.com/payment?external_reference_id=8lIV0oqyplqnZulPqVirFZbTf2rkhLsR)\n\n💎 **Binance**\n┗ 🆔 ID: \`729592524\`\n\n━━━━━━━━━━━━━━━━━━\n**COMISIONES DE MESA**\n\n🎲 Comisión de **200 ARS** en Discord\n🟢 Partidas menores a **2.500 ARS** → **SIN comisión**\n⚠️ Jugadas fuera de Discord → **10% del monto**\n\n━━━━━━━━━━━━━━━━━━\n**VAGANCIA LUDO SYSTEM**`)
-    .setFooter({ text: "VAGANCIA • LUDO CLUB", iconURL: LOGO_LUDO_VG });
-}
-
 function crearEmbedFila(data = { f1: null, f2: null, f3: null }) {
   const p1 = data.f1 ? `<@${data.f1}>` : "*Esperando rival...*";
   const p2 = data.f2 ? `<@${data.f2}>` : "*Esperando rival...*";
   const p3 = data.f3 ? `<@${data.f3}>` : "*Esperando rival...*";
 
   return new EmbedBuilder()
-    .setColor(0xFACC15)
-    .setTitle(`${EMOJI_DADO_TITULO} | ¡FILA DE LUDO ACTIVA!`)
-    .setDescription(`**Modalidad:** Apostado ${EMOJI_DINERO}\n**Juego:** Ludo Club / King\n\n**Mesas disponibles:**\n${EMOJI_DADO_FILA} **Mesa 1:** ${p1}\n${EMOJI_DADO_FILA} **Mesa 2:** ${p2}\n${EMOJI_DADO_FILA} **Mesa 3:** ${p3}\n\n*¡Entra a una mesa para coordinar el monto!*`)
-    .setThumbnail(LOGO_LUDO_VG) 
-    .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS" });
+    .setColor(0xFACC15) // Amarillo Ludo
+    .setTitle(`${EMOJI_DADO_TITULO} | SISTEMA DE FILAS • VAGANCIA`)
+    .setDescription(
+`**MODALIDAD:** Apostado ${EMOJI_DINERO}
+**JUEGO:** Ludo Club / Ludo King
+
+━━━━━━━━━━━━━━━━━━
+${EMOJI_DADO_FILA} **MESA 1:** ${p1}
+${EMOJI_DADO_FILA} **MESA 2:** ${p2}
+${EMOJI_DADO_FILA} **MESA 3:** ${p3}
+━━━━━━━━━━━━━━━━━━
+
+*Presioná un botón para anotarte en la fila.*`
+    )
+    .setImage(LOGO_LUDO_VG) // IMAGEN GRANDE ABAJO PARA QUE SE VEA BIEN EL LOGO
+    .setFooter({ text: "VAGANCIA • EL REY DE LOS DADOS", iconURL: LOGO_LUDO_VG });
 }
 
+function embedPagos() {
+  return new EmbedBuilder()
+    .setColor(0x22c55e)
+    .setTitle("💳 MÉTODOS DE PAGO")
+    .setDescription(
+`🏦 **Naranja X**
+┗ 👤 Alejo German Tolosa
+┗ 🔗 Alias: \`vg.apos\`
+
+🌐 **AstroPay / Binance**
+┗ 🆔 ID: \`729592524\`
+
+━━━━━━━━━━━━━━━━━━
+**COMISIONES**
+🎲 Fijo: **200 ARS**
+🟢 Menos de **2.500 ARS** → **FREE**`
+    )
+    .setThumbnail(LOGO_LUDO_VG); // En el ticket de pago queda bien chiquito al costado
+}
+
+// ===================== LÓGICA DE BOTONES =====================
 function botonesTripleFila() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder().setCustomId("btn_f1").setLabel("Mesa 1").setEmoji("🎲").setStyle(ButtonStyle.Primary),
@@ -68,12 +92,11 @@ function botonesTripleFila() {
   );
 }
 
-// ===================== LOGICA =====================
+// [Misma lógica de eventos que antes...]
 client.on("messageCreate", async (message) => {
   if (message.author.bot || message.content !== PREFIX) return;
-  const esAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
-  const tieneRol = message.member.roles.cache.has(CREAR_FILA_ROLE_ID);
-  if (!esAdmin && !tieneRol) return;
+  const esAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator) || message.member.roles.cache.has(CREAR_FILA_ROLE_ID);
+  if (!esAdmin) return;
 
   const msg = await message.channel.send({
     embeds: [crearEmbedFila()],
@@ -87,21 +110,18 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.customId === "cerrar_partida") {
     const puedeCerrar = interaction.member.roles.cache.has(STAFF_ROLE_ID) || interaction.member.roles.cache.has(EXTRA_MOD_ROLE_ID) || interaction.member.permissions.has(PermissionsBitField.Flags.Administrator);
-    if (!puedeCerrar) return interaction.reply({ content: "❌ Solo Staff.", ephemeral: true });
+    if (!puedeCerrar) return interaction.reply({ content: "❌ No tenés permiso.", ephemeral: true });
     
-    const canalDestino = interaction.channel;
-    await interaction.reply({ content: "💾 Guardando registro...", ephemeral: true });
-    
+    await interaction.reply({ content: "💾 Cerrando y guardando...", ephemeral: true });
     try {
-      const attachment = await discordTranscripts.createTranscript(canalDestino, { limit: -1, fileName: `ludo-${canalDestino.name}.html`, saveImages: true, poweredBy: false });
+      const attachment = await discordTranscripts.createTranscript(interaction.channel, { limit: -1, fileName: `ludo-${interaction.channel.name}.html`, saveImages: true, poweredBy: false });
       const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
-      if (logChannel) await logChannel.send({ content: `📝 **Reporte Ludo**\nCerrado por: <@${interaction.user.id}>`, files: [attachment] });
+      if (logChannel) await logChannel.send({ content: `📝 **Mesa Finalizada**\nOperador: <@${interaction.user.id}>`, files: [attachment] });
     } catch (e) { console.error(e); }
-    setTimeout(() => canalDestino.delete().catch(() => {}), 2000);
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 2000);
     return;
   }
 
-  // REPARAR FILA SI EL BOT SE REINICIÓ (FIX EXPIRADA)
   if (!estadosFilas.has(interaction.message.id)) {
     estadosFilas.set(interaction.message.id, { f1: null, f2: null, f3: null });
   }
@@ -133,26 +153,22 @@ client.on("interactionCreate", async (interaction) => {
     data[filaKey] = null; 
     await interaction.update({ embeds: [crearEmbedFila(data)] });
     
-    const guild = interaction.guild;
-    const parent = interaction.channel.parent;
-    const nombres = [rivalId, userId].map(id => guild.members.cache.get(id)?.user.username || "jugador").join("-vs-").toLowerCase();
-    
-    const canal = await guild.channels.create({
-      name: `🎲┃${nombres}`,
+    const canal = await interaction.guild.channels.create({
+      name: `🎲┃${interaction.user.username}-vs-rival`,
       type: ChannelType.GuildText,
-      parent,
+      parent: interaction.channel.parent,
       permissionOverwrites: [
-        { id: guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+        { id: interaction.guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
         { id: STAFF_ROLE_ID, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
         { id: rivalId, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
         { id: userId, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
       ],
     });
 
-    const embedMatch = new EmbedBuilder().setColor(0x3b82f6).setTitle("🏁 PARTIDA LISTA").setDescription(`**DUELO DE DADOS**\n<@${rivalId}> **VS** <@${userId}>\n\n━━━━━━━━━━━━━━━━━━\n💰 **PASEN CAPTURA DE PAGO AQUÍ**\n━━━━━━━━━━━━━━━━━━`).setThumbnail(LOGO_LUDO_VG);
+    const embedMatch = new EmbedBuilder().setColor(0x3b82f6).setTitle("🏁 PARTIDA LISTA").setDescription(`**DUELO:** <@${rivalId}> **VS** <@${userId}>`).setImage(LOGO_LUDO_VG);
     await canal.send({ content: `<@${rivalId}> <@${userId}> <@&${STAFF_ROLE_ID}>`, embeds: [embedMatch, embedPagos()], components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("cerrar_partida").setLabel("FINALIZAR").setEmoji("🛑").setStyle(ButtonStyle.Danger))] });
   }
 });
 
-client.once("ready", () => console.log("🎲 Bot Ludo Online - Vagancia System"));
+client.once("ready", () => console.log("🎲 Ludo Bot Vagancia v2 Online"));
 client.login(process.env.TOKEN);
