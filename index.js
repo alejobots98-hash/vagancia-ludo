@@ -66,9 +66,9 @@ function embedPagos() {
     .setColor(0x22c55e)
     .setTitle("💳 MÉTODOS DE PAGO")
     .setDescription(
-`🏦 **Naranja X**
-┗ 👤 Alejo German Tolosa
-┗ 🔗 Alias: \`vg.apos\`
+`🏦 **Mercado Pago**
+┗ 👤 Amanda Ines Rojas
+┗ 🔗 Alias: \`029.amanda.docena.mp\`
 
 🌐 **AstroPay**
 ┗ 🔗 [Pagar aquí](https://onetouch.astropay.com/payment?external_reference_id=8lIV0oqyplqnZulPqVirFZbTf2rkhLsR)
